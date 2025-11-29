@@ -37,11 +37,11 @@ python manage.py runserver
 Access application
 Open http://127.0.0.1:8000 in your browser
 
-🧠 Algorithm Explanation
+***🧠 Algorithm Explanation***
 The Smart Task Analyzer uses a sophisticated scoring system that evaluates tasks based on four key factors: urgency, importance, effort, and dependencies. Each factor is weighted differently depending on the selected strategy.
 
-Core Scoring Factors:
-1. Urgency (Time Sensitivity)
+***Core Scoring Factors:***
+**1. Urgency (Time Sensitivity)**
 
 Overdue tasks: +100 + (days overdue × 2)
 
@@ -52,7 +52,7 @@ Due in 1-3 days: +50-70 points
 Due in 4-7 days: +30 points
 This exponential decay ensures imminent deadlines receive significantly higher priority.
 
-2. Importance (User-Defined Value)
+**2. Importance (User-Defined Value)**
 
 Linear scaling: importance × 6
 
@@ -60,7 +60,7 @@ High importance (8-10): Major priority boost
 
 Low importance (1-3): Minimal impact
 
-3. Effort (Quick Wins)
+**3. Effort (Quick Wins)**
 
 ≤1 hour: +25 points (significant quick win bonus)
 
@@ -69,7 +69,7 @@ Low importance (1-3): Minimal impact
 ≥8 hours: -10 points (penalty for time-consuming tasks)
 This encourages completing smaller tasks that can be finished quickly.
 
-4. Dependencies (Blocking Tasks)
+**4. Dependencies (Blocking Tasks)**
 
 +3 points per dependent task
 
@@ -77,7 +77,8 @@ Tasks blocking others receive higher priority
 
 Circular dependency detection prevents infinite loops
 
-Strategy Variations:
+***Strategy Variations:***
+
 Smart Balance: Balanced weighting of all factors
 
 Fastest Wins: Prioritizes low-effort tasks (100 - hours × 8)
@@ -88,8 +89,10 @@ Deadline Driven: Emphasizes due dates (100 - days_until × 3)
 
 The algorithm ensures overdue and urgent tasks receive immediate attention while balancing importance and available time.
 
-🎯 Design Decisions
-Backend Architecture
+***🎯 Design Decisions***
+
+**Backend Architecture**
+
 Django REST Framework: Chosen for rapid development and built-in security
 
 SQLite Database: Sufficient for demo purposes, easy setup
@@ -98,7 +101,8 @@ Class-Based Views: Better organization and code reuse
 
 Separate Scoring Module: Algorithm decoupled from business logic
 
-Frontend Approach
+**Frontend Approach**
+
 Vanilla JavaScript: No framework dependencies, demonstrates core skills
 
 Responsive CSS Grid: Works on all device sizes
@@ -114,7 +118,7 @@ Basic Error Handling: Focus on core functionality over edge cases
 
 Simple Dependency System: Linear dependencies rather than complex graphs
 
-⏱️ Time Breakdown
+***⏱️ Time Breakdown***
 Project Setup: 30 minutes
 
 Backend Development: 2 hours
@@ -139,7 +143,7 @@ Documentation: 30 minutes
 
 Total: Approximately 5 hours
 
-🏆 Bonus Challenges Attempted
+***🏆 Bonus Challenges Attempted***
 Circular Dependency Detection ✅
 
 Implemented graph traversal to detect dependency cycles
@@ -154,7 +158,7 @@ API endpoint testing
 
 Edge case coverage
 
-🔮 Future Improvements
+***🔮 Future Improvements***
 With more time, I would implement:
 
 User Authentication & Persistence
@@ -192,3 +196,9 @@ Mobile Application
 React Native mobile app
 
 Push notifications for deadlines
+
+
+***👨‍💻 Author***
+Eshwar Raju A G
+GitHub: https://github.com/eshwarpresi
+
