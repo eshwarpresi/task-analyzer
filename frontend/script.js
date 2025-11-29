@@ -5,8 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set minimum date to today
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('dueDate').min = today;
-    
-    // REMOVED: loadSampleData() - No sample data needed
+    document.getElementById('dueDate').value = today;
     
     // Add form submit handler
     document.getElementById('singleTaskForm').addEventListener('submit', function(e) {
@@ -15,27 +14,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// REMOVED: loadSampleData() function entirely
-
 function addTaskFromForm() {
-    const form = document.getElementById('singleTaskForm');
-    const dependenciesInput = document.getElementById('dependencies').value;
-    
     const task = {
         title: document.getElementById('title').value,
         due_date: document.getElementById('dueDate').value,
         estimated_hours: parseInt(document.getElementById('estimatedHours').value),
         importance: parseInt(document.getElementById('importance').value),
-        dependencies: dependenciesInput ? dependenciesInput.split(',').map(id => parseInt(id.trim())) : []
+        dependencies: []
     };
     
     tasks.push(task);
     updateCurrentTasksList();
-    form.reset();
     
-    // Reset date to today
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('dueDate').value = today;
+    // Reset form but keep today's date
+    document.getElementById('title').value = '';
+    document.getElementById('estimatedHours').value = '1';
+    document.getElementById('importance').value = '5';
+    document.getElementById('dueDate').value = new Date().toISOString().split('T')[0];
+    
+    console.log('Form task added. Total tasks:', tasks.length);
 }
 
 function updateCurrentTasksList() {
@@ -53,41 +50,51 @@ function updateCurrentTasksList() {
         taskElement.innerHTML = `
             <strong>${index + 1}. ${task.title}</strong><br>
             Due: ${task.due_date} | Hours: ${task.estimated_hours} | Importance: ${task.importance}
-            ${task.dependencies.length ? `| Dependencies: ${task.dependencies.join(', ')}` : ''}
         `;
         container.appendChild(taskElement);
     });
 }
 
 async function analyzeTasks() {
-    const strategy = document.getElementById('strategy').value;
     let tasksToAnalyze = [];
     
-    // Check if JSON input has data, otherwise use form tasks
+    // Check if JSON input has data
     const jsonInput = document.getElementById('jsonInput').value.trim();
     if (jsonInput) {
         try {
-            tasksToAnalyze = JSON.parse(jsonInput);
-            // Update current tasks list to show JSON tasks
-            tasks = tasksToAnalyze.map((task, index) => ({
-                ...task,
-                id: index + 1
-            }));
+            const jsonTasks = JSON.parse(jsonInput);
+            console.log('Using JSON tasks:', jsonTasks.length);
+            
+            // COMBINE form tasks + JSON tasks for analysis (ONLY if not already added)
+            // Check if JSON tasks are already in the tasks array
+            const newJsonTasks = jsonTasks.filter(jsonTask => 
+                !tasks.some(existingTask => existingTask.title === jsonTask.title)
+            );
+            
+            tasksToAnalyze = [...tasks, ...newJsonTasks];
+            
+            // Also update current tasks to show both (only add new JSON tasks)
+            tasks = [...tasks, ...newJsonTasks];
             updateCurrentTasksList();
+            
+            // Clear JSON input after using it to prevent duplicates
+            document.getElementById('jsonInput').value = '';
+            
         } catch (e) {
             showError('Invalid JSON format. Please check your input.');
             return;
         }
     } else {
+        // Use only form tasks
         if (tasks.length === 0) {
             showError('Please add some tasks first.');
             return;
         }
-        tasksToAnalyze = tasks.map((task, index) => ({
-            ...task,
-            id: index + 1
-        }));
+        tasksToAnalyze = tasks;
+        console.log('Using form tasks:', tasksToAnalyze.length);
     }
+    
+    console.log('Total tasks to analyze:', tasksToAnalyze.length);
     
     showLoading();
     hideError();
@@ -100,7 +107,7 @@ async function analyzeTasks() {
             },
             body: JSON.stringify({
                 tasks: tasksToAnalyze,
-                strategy: strategy
+                strategy: document.getElementById('strategy').value
             })
         });
         
@@ -187,10 +194,6 @@ function displayResults(analyzedTasks, strategy) {
                 <div class="detail-item">
                     <div class="detail-label">Importance</div>
                     <div class="detail-value">${task.importance}/10</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Dependencies</div>
-                    <div class="detail-value">${task.dependencies ? task.dependencies.length : 0}</div>
                 </div>
             </div>
             
